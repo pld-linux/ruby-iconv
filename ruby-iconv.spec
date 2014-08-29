@@ -44,6 +44,9 @@ Dokumentacji w formacie ri dla %{pkgname}.
 %setup -q -n %{pkgname}-%{version}
 
 %build
+# write .gemspec
+%__gem_helper spec
+
 cd ext/%{pkgname}
 %{__ruby} extconf.rb
 %{__make} \
@@ -62,12 +65,14 @@ rm ri/{page-Makefile.ri,page-mkmf_log.ri}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{ruby_vendorlibdir},%{ruby_vendorarchdir}/iconv,%{ruby_ridir},%{ruby_rdocdir}}
+install -d $RPM_BUILD_ROOT{%{ruby_vendorlibdir},%{ruby_vendorarchdir}/iconv,%{ruby_specdir},%{ruby_ridir},%{ruby_rdocdir}}
 
 install -p ext/%{pkgname}/%{pkgname}.so $RPM_BUILD_ROOT%{ruby_vendorarchdir}/iconv
 cp -a lib/* $RPM_BUILD_ROOT%{ruby_vendorlibdir}
 cp -a ext/%{pkgname}/ri/* $RPM_BUILD_ROOT%{ruby_ridir}
 cp -a ext/%{pkgname}/rdoc $RPM_BUILD_ROOT%{ruby_rdocdir}/%{name}-%{version}
+
+cp -p %{pkgname}-%{version}.gemspec $RPM_BUILD_ROOT%{ruby_specdir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -79,6 +84,7 @@ rm -rf $RPM_BUILD_ROOT
 %{ruby_vendorlibdir}/iconv
 %dir %{ruby_vendorarchdir}/iconv
 %attr(755,root,root) %{ruby_vendorarchdir}/iconv/iconv.so
+%{ruby_specdir}/%{pkgname}-%{version}.gemspec
 
 %files rdoc
 %defattr(644,root,root,755)
